@@ -1,0 +1,46 @@
+image: mcr.microsoft.com/dotnet/sdk:8.0
+
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  script:
+    - "dotnet restore"
+    - "dotnet build"
+  artifacts:
+    paths:
+      - bin/
+
+test:
+  stage: test
+  before_script:
+    - "dotnet tool install -g dotnet-reportgenerator-globaltool"
+    - "export PATH=\"$PATH:/root/.dotnet/tools\""
+    - "apt-get update && apt-get install -y bc"
+
+  script:
+    - echo "Executando testes com cobertura de código..."
+    - dotnet test healthEase-api.Tests --collect:"XPlat Code Coverage" -p:CoverletOutputFormat=cobertura -p:CoverletOutput=healthEase-api.Tests/TestResults/coverage.cobertura.xml --logger "trx;LogFileName=TestResults.trx"
+    - |
+      cat healthEase-api.Tests/TestResults/**/coverage.cobertura.xml || echo "Arquivo de cobertura não encontrado."
+    - reportgenerator -reports:healthEase-api.Tests/TestResults/**/coverage.cobertura.xml -targetdir:healthEase-api.Tests/TestResults/CoverageReport
+
+    # Captura do valor de line-rate e cálculo da porcentagem
+    - |
+      COVERAGE=$(grep -oP 'line-rate="\K\d+\.\d+' healthEase-api.Tests/TestResults/**/coverage.cobertura.xml | tail -n 1)  # Pega somente a última linha
+      PERCENTAGE=$(echo "$COVERAGE * 100" | bc)
+      echo "Cobertura de código: $PERCENTAGE%"
+      echo "coverage=$PERCENTAGE%"  # Imprime somente uma linha relevante para o GitLab CI
+
+  artifacts:
+    paths:
+      - healthEase-api.Tests/TestResults/CoverageReport
+      - healthEase-api.Tests/TestResults/**/*.cobertura.xml
+      - healthEase-api.Tests/TestResults/*.trx
+    reports:
+      junit:
+        - healthEase-api.Tests/TestResults/*.trx
+  coverage: '/coverage=(\d+\.\d+)%/'  # Regex para capturar a cobertura
+

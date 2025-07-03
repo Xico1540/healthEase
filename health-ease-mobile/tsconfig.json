@@ -1,0 +1,10 @@
+{
+    "extends": "expo/tsconfig.base",
+    "compilerOptions": {
+        "strict": true,
+        "paths": {
+            "@/*": ["./*"]
+        }
+    },
+    "include": ["src", "**/*.ts", "**/*.tsx", "metro.config.js", "statusBar.config.js"]
+}
