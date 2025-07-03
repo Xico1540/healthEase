@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>healthEase_backend.Tests</RootNamespace>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.msbuild" Version="6.0.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="JetBrains.Annotations" Version="2024.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.10" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.6.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\healthEase-api\healthEase-api.csproj" />
+  </ItemGroup>
+
+  <Target Name="RunTestsAndGenerateReport" AfterTargets="Test" BeforeTargets="Test">
+    <!-- Run tests with coverage enabled --> 
+    <Exec Command='dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./TestResults/coverage.cobertura.xml /p:ExcludeByFile=\"**/*Migrations/*.cs,**/*Infrastructure/**/**.cs,**/Program.cs\" --logger trx' />
+    <!-- Generate HTML report -->
+    <Exec Command="reportgenerator -reports:./TestResults/coverage.cobertura.xml -targetdir:./TestResults/CoverageReport" />
+    <!-- Optionally open the report in the default browser -->
+    <Exec Command="start ./TestResults/CoverageReport/index.html" Condition="'$(OS)' == 'Windows_NT'" />
+    <Exec Command="open ./TestResults/CoverageReport/index.html" Condition="'$(OS)' != 'Windows_NT'" />
+  </Target>
+  
+</Project>

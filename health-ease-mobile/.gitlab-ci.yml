@@ -1,0 +1,32 @@
+stages:
+    - lint
+    - test
+
+.common_steps:
+    image: node:18-alpine
+    variables:
+        TZ: Europe/Lisbon
+    rules:
+        - if: $CI_COMMIT_TAG
+          when: never
+        - if: '$CI_COMMIT_BRANCH == "main" || $CI_PIPELINE_SOURCE == "merge_request_event"'
+    before_script:
+        - export LC_ALL=pt_PT.UTF-8
+        - export LANG=pt_PT.UTF-8
+        - yarn install --frozen-lockfile
+
+eslint:
+    extends: .common_steps
+    stage: lint
+    script:
+        - yarn lint
+
+verify:
+    extends: .common_steps
+    stage: test
+    script:
+        - export EXPO_PUBLIC_API_BASE_URL=http://localhost:3000/
+        - export EXPO_PUBLIC_CLIENT_EMAIL=email
+        - export EXPO_PUBLIC_CLIENT_PASSWORD=password
+        - yarn test --watchAll=false --coverage
+    coverage: /All\sfiles.*?\s+(\d+.\d+)/

@@ -1,0 +1,57 @@
+﻿services:
+  healthEase-database:
+    image: "bitnami/postgresql:14.1.0"
+    environment:
+      POSTGRESQL_DATABASE: "healthEase_database"
+      POSTGRESQL_USERNAME: "healthEase_user"
+      POSTGRESQL_PASSWORD: "password123"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U healthEase_user" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+      
+  healthEase-database-restorer:
+    image: "bitnami/postgresql:14.1.0"
+    user: root
+    environment:
+      PGUSER: "healthEase_user"
+      PGPASSWORD: "password123"
+      PGHOST: "healthEase-database"
+      PGDATABASE: "healthEase_database"
+    command:
+      - "sh"
+      - "-c"
+      - >
+        psql --dbname=$PGDATABASE --username=$PGUSER --host=$PGHOST --file=/tmp/healthEase-database.sql || echo "An error occurred while restoring the database" /tmp/ehr-database-restorer-healthcheck.sh
+    volumes:
+      - ./config/healthEase-database.sql:/tmp/healthEase-database.sql
+      - ./config/healthcheck/healthEase-database-restorer-healthcheck.sh:/tmp/healthEase-database-restorer-healthcheck.sh
+    depends_on:
+      healthEase-database:
+        condition: service_healthy
+
+  healthEase-database-exporter:
+    image: "bitnami/postgresql:14.1.0"
+    user: "root"
+    environment:
+      PGUSER: "healthEase_user"
+      PGPASSWORD: "password123"
+      PGHOST: "healthEase-database"
+      PGDATABASE: "healthEase_database"
+    command: >
+      sh -c 'pg_dump --dbname=$PGDATABASE --username=$PGUSER --host=$PGHOST --file=/backup/healthEase-database.sql'
+    volumes:
+      - ./backup:/backup
+    restart: "no"
+    profiles:
+      - export
+
+  mailhog:
+    image: mailhog/mailhog
+    restart: always
+    ports:
+      - "1025:1025"
+      - "8025:8025"

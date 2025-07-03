@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "newArchEnabled": true,
+    "name": "HealthEase",
+    "slug": "HealthEase",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./src/assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./src/assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.healthease.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA"
+      ]
+    },
+    "web": {
+      "favicon": "./src/assets/favicon.png"
+    },
+    "plugins": [
+      "expo-localization",
+      "expo-image-picker",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "recordAudioAndroid": true
+        }
+      ],
+      [
+        "@rnmapbox/maps",
+        {
+          "RNMapboxMapsVersion": "11.8.0"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "86b797c3-c7d5-47d1-b93d-af49382d69c9"
+      }
+    }
+  }
+}

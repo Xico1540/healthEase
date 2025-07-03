@@ -1,0 +1,50 @@
+{
+    "env": {
+        "es2021": true,
+        "node": true
+    },
+    "extends": ["plugin:react/recommended", "airbnb", "airbnb-typescript", "airbnb/hooks", "prettier"],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": "latest",
+        "sourceType": "module",
+        "project": "./tsconfig.json"
+    },
+    "plugins": ["react", "react-native", "@typescript-eslint", "prettier"],
+    "rules": {
+        "global-require": "off",
+        "import/no-unresolved": "off",
+        "import/extensions": "off",
+        "react/require-default-props": "off",
+        "react/jsx-filename-extension": [
+            1,
+            {
+                "extensions": [".tsx"]
+            }
+        ],
+        "react/react-in-jsx-scope": "off",
+        "import/no-extraneous-dependencies": "off",
+        "react/function-component-definition": "off",
+        "no-restricted-exports": "off",
+        "no-undef": "off",
+        "no-use-before-define": "off",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "error",
+        "react/no-unstable-nested-components": [
+            "error",
+            {
+                "allowAsProps": true
+            }
+        ],
+        "react/jsx-props-no-spreading": "off",
+        "no-nested-ternary": "off",
+        "react/prop-types": "off",
+        "class-methods-use-this": "off",
+        "max-classes-per-file": "off",
+        "react-hooks/exhaustive-deps": "off",
+        "react/no-unused-prop-types": "off"
+    }
+}
